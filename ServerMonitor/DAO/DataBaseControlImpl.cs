@@ -1,5 +1,6 @@
 ﻿using ServerMonitor.Controls;
 using ServerMonitor.DAOImpl;
+using ServerMonitor.LogDb;
 using ServerMonitor.Models;
 using SQLite.Net;
 using SQLite.Net.Platform.WinRT;
@@ -20,6 +21,10 @@ namespace ServerMonitor.SiteDb
         /// 持有SiteDAO对象实现对Site的操作
         /// </summary>
         private SiteDAO siteDao;
+        /// <summary>
+        /// 持有LogDAO对象实现对Log的操作
+        /// </summary>
+        private LogDAO logDao;
         /// <summary>
         /// 数据库名称
         /// </summary>
@@ -56,6 +61,7 @@ namespace ServerMonitor.SiteDb
         {
             SetDBFilename(DBFilename);
             siteDao = new SiteDaoImpl();
+            logDao = new LogDaoImpl();
             // ApplicationData.Current.LocalFolder.Path balabala的指的是这个位置 ->C:\Users\xiao22805378\AppData\Local\Packages\92211ab1-5481-4a1a-9111-a3dd87b81b72_8zmgqd0netmce\LocalState\
             if (!File.Exists(dBPath))//判断数据库文件是否存在
             {
@@ -209,7 +215,7 @@ namespace ServerMonitor.SiteDb
                             Log_record = null
                         }
                     };
-                    DBHelper.InsertListLog(l_log);
+                    logDao.InsertListLog(l_log);
                 }
             }
             else

@@ -8,12 +8,18 @@ using ServerMonitor.SiteDb;
 using ServerMonitor.Models;
 using System.Diagnostics;
 using Windows.UI.Popups;
+using System.IO;
+using Windows.Storage;
 
 namespace TestServerMonitor.TestDAO
 {
     [TestClass]
     public class TestSiteDAO
     {
+        /// <summary>
+        /// 测试用数据库名称
+        /// </summary>
+        public static string dbname="test";
         /// <summary>
         /// 测试用site列表
         /// </summary>
@@ -32,7 +38,14 @@ namespace TestServerMonitor.TestDAO
         public static void InitDatabase(TestContext testContext)
         {
             DBInit db = DataBaseControlImpl.Instance;
-            db.InitDB("simple5.db");
+            db.InitDB(TestSiteDAO.dbname);
+        }
+        [TestMethod]
+        [AssemblyCleanup]
+        public static void Cleanup()
+        {
+            string dBPath = Path.Combine(ApplicationData.Current.LocalFolder.Path, TestSiteDAO.dbname);
+            File.Delete(dBPath);
         }
         [TestMethod]
         [TestInitialize]
