@@ -33,23 +33,31 @@ namespace TestServerMonitor.TestDAO
         /// </summary>
         SiteModel site;
 
-        [TestMethod]
+        /// <summary>
+        /// 调用测试方法之前先初始化数据库
+        /// </summary>
+        /// <param name="testContext"></param>
         [AssemblyInitialize]
         public static void InitDatabase(TestContext testContext)
         {
             DBInit db = DataBaseControlImpl.Instance;
             db.InitDB(TestSiteDAO.dbname);
         }
-        [TestMethod]
+        /// <summary>
+        /// 测试结束时删除数据库
+        /// </summary>
         [AssemblyCleanup]
         public static void Cleanup()
         {
             string dBPath = Path.Combine(ApplicationData.Current.LocalFolder.Path, TestSiteDAO.dbname);
             File.Delete(dBPath);
         }
+        /// <summary>
+        /// 每次调用测试方法还原测试site和测试site列表的状态
+        /// </summary>
         [TestMethod]
         [TestInitialize]
-        public  void Init()//初始化数据库并向site列表填充数据
+        public  void Init()
         {
             siteModels = new List<SiteModel>();
             SiteModel tmpsite = new SiteModel()
