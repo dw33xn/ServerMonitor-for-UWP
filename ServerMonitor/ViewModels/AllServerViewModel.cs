@@ -22,7 +22,7 @@ namespace ServerMonitor.ViewModels
 {
     class AllServerViewModel : Template10.Mvvm.ViewModelBase
     {
-        private List<Site> sites;
+        private List<SiteModel> sites;
         private ServerItem ServerContext;
         Grid rightFrame1;
         private int order = 1;  //1:id As 2:id De 3:Al As 4:Al De
@@ -157,25 +157,12 @@ namespace ServerMonitor.ViewModels
         //add server点击事件
         public void Add_Server(object sender, RoutedEventArgs e)
         {
-            //ShowAddServerPage();
             NavigationService.Navigate(typeof(Views.AddServerPage), "2,-1"); //1MainPage, 2 AllServer; -1没有id是新建site
-            //AddServerPage.ShowWindow();
-        }
-        private void ShowAddServerPage()
-        {
-            //var msgPopup = new AddServerPage();
-            //AddServerPage.ShowWindow();
         }
         //add website点击事件
         public void Add_Website(object sender, RoutedEventArgs e)
         {
-            ShowAddWebsitePage();
-            //AddWebsitePage.ShowWindow();
-        }
-        private void ShowAddWebsitePage()
-        {
-            var msgPopup = new AddWebsitePage();
-            AddWebsitePage.ShowWindow();
+            NavigationService.Navigate(typeof(Views.AddWebsitePage), "2,-1"); //1MainPage, 2 AllServer; -1没有id是新建site
         }
 
 
@@ -191,15 +178,10 @@ namespace ServerMonitor.ViewModels
             if (site.Is_server)
             {
                 NavigationService.Navigate(typeof(Views.AddServerPage), "2,"+ ServerContext.Site_id); //1MainPage, 2 AllServer; -1没有id是新建site
-                //var msgPoput = new AddServerPage(ServerContext.Site_id.ToString());
-                ////msgPoput.ShowWindow();
-                //AddServerPage.ShowWindow();
             }
             else
             {
-                var msgPoput = new AddWebsitePage(ServerContext.Site_id.ToString());
-                //msgPoput.ShowWindow();
-                AddWebsitePage.ShowWindow();
+                NavigationService.Navigate(typeof(Views.AddWebsitePage), "2," + ServerContext.Site_id); //1MainPage, 2 AllServer; -1没有id是新建site
             }
             rightFrame1.Visibility = Visibility.Collapsed;
         }
@@ -247,7 +229,7 @@ namespace ServerMonitor.ViewModels
         {
             ServerItems.Clear();
             sites = DBHelper.GetAllSite();
-            List<Site> q = ProcessSite(sites);
+            List<SiteModel> q = ProcessSite(sites);
             string site_status;
 
             for (int i = 0; i < q.Count; i++)
@@ -291,9 +273,9 @@ namespace ServerMonitor.ViewModels
                 }
             }
         }
-        private List<Site> ProcessSite(List<Site> list)
+        private List<SiteModel> ProcessSite(List<SiteModel> list)
         {
-            List<Site> q;
+            List<SiteModel> q;
             if (filter == 2)  //0:Error  1:Normal  2:All Servers,
             {
                 q = (from t in sites
