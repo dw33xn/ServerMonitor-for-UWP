@@ -123,14 +123,15 @@ namespace TestServerMonitor.TestDAO
         [TestMethod]
         public void TestSiteDAO_InsertOneSite_Success()
         {
-            Assert.AreEqual(1, siteDAO.InsertOneSite(site), "success");//如果结果为1，插入成功
+            Assert.AreEqual(1, siteDAO.InsertOneSite(site), "success");//返回结果正确
+            Assert.AreNotEqual(null, siteDAO.GetSiteById(site.Id));//确认数据已经插入
         }
 
         /// <summary>
         /// 没有SiteName字段
         /// </summary>
         [TestMethod]
-        public void TestSiteDAOImpl_InsertOneSite_WithOut_Site_name()
+        public void TestSiteDAOImpl_InsertOneSite_Failed_By_WithOut_Site_name()
         {
             site.Site_name = null;
             Assert.AreEqual(-1, siteDAO.InsertOneSite(site), "未设置SiteName");
@@ -139,7 +140,7 @@ namespace TestServerMonitor.TestDAO
         /// 没有Site_address字段
         /// </summary>
         [TestMethod]
-        public void TestSiteDAO_InsertOneSite_WithOut_Site_address()
+        public void TestSiteDAO_InsertOneSite_Failed_By_Not_Set_Site_address()
         {
             site.Site_address = null;
             Assert.AreEqual(-1, siteDAO.InsertOneSite(site), "未设置SiteAddress");//如果结果为1，插入成功
@@ -148,7 +149,7 @@ namespace TestServerMonitor.TestDAO
         /// 没有Protocol_type字段
         /// </summary>
         [TestMethod]
-        public void TestSiteDAO_InsertOneSite_WithOut_Protocol_type()
+        public void TestSiteDAO_InsertOneSite_Failed_By_Not_Set_Protocol_type()
         {
             site.Protocol_type = null;
             Assert.AreEqual(-1, siteDAO.InsertOneSite(site), "未设置");//如果结果为1，插入成功
@@ -160,12 +161,15 @@ namespace TestServerMonitor.TestDAO
         public void TestSiteDAO_InsertListSite_Success()
         {
             Assert.AreEqual(siteModels.Count, siteDAO.InsertListSite(siteModels), "插入数据成功");
+            foreach(SiteModel tmp in siteModels){
+                Assert.AreNotEqual(null, siteDAO.GetSiteById(tmp.Id));//确认site列表插入成功
+            }
         }
         /// <summary>
         /// site列表中的site存在Site_name为空
         /// </summary>
         [TestMethod]
-        public void TestSiteDAO_InsertListSite_Failed_By_Item_WithOut_Site_name()
+        public void TestSiteDAO_InsertListSite_Failed_By_Item_Not_Set_Site_name()
         {
             siteModels[0].Site_name = null;
             Assert.AreNotEqual(siteModels.Count, siteDAO.InsertListSite(siteModels), "插入错误");
@@ -174,7 +178,7 @@ namespace TestServerMonitor.TestDAO
         /// site列表中的site存在Protocol_type为空
         /// </summary>
         [TestMethod]
-        public void TestSiteDAO_InsertListSite_Failed_By_Item_WithOut_Protocol_type()
+        public void TestSiteDAO_InsertListSite_Failed_By_Item_Not_Set_Protocol_type()
         {
             siteModels[0].Protocol_type = null;
             Assert.AreNotEqual(siteModels.Count, siteDAO.InsertListSite(siteModels), "插入错误");
@@ -183,7 +187,7 @@ namespace TestServerMonitor.TestDAO
         /// site列表中的site存在Site_address为空
         /// </summary>
         [TestMethod]
-        public void TestSiteDAO_InsertListSite_Failed_By_Item_WithOut_Site_address()
+        public void TestSiteDAO_InsertListSite_Failed_By_Item_Not_Set_Site_address()
         {
             siteModels[0].Site_address = null;
             Assert.AreNotEqual(siteModels.Count, siteDAO.InsertListSite(siteModels), "插入错误");
@@ -209,7 +213,7 @@ namespace TestServerMonitor.TestDAO
         /// 未找到对应id的site对象
         /// </summary>
         [TestMethod]
-        public void TestSiteDAO_GetSiteById_Not_Find()
+        public void TestSiteDAO_GetSiteById_Failed_By_Id_Not_Find()
         {
             Assert.AreEqual(null, siteDAO.GetSiteById(-1), "未找到该id对应的site");
         }
@@ -219,24 +223,33 @@ namespace TestServerMonitor.TestDAO
         [TestMethod]
         public void TestSiteDAO_DeleteOneSite_Success()
         {
-            List<SiteModel> list = siteDAO.GetAllSite();
-            if (list.Count==0)
+            SiteModel tmp = new SiteModel()
             {
-                //site表中没有数据
-                Assert.AreEqual(0, siteDAO.DeleteOneSite(1), "未找到对应site");
-            }
-            else
-            {
-                Assert.AreEqual(1, siteDAO.DeleteOneSite(list[0].Id), "删除成功");
-            }
-
+                Site_name = "BaiDu",
+                Site_address = "https://www.google.com",
+                Is_server = false,
+                Protocol_type = "HTTP",
+                Server_port = 1,
+                Monitor_interval = 5,
+                Is_Monitor = false,
+                Status_code = "200",
+                Request_interval = 25383,
+                Create_time = DateTime.Now,
+                Update_time = DateTime.Now,
+                Is_pre_check = false,
+                Request_succeed_code = "200",
+                Last_request_result = 0
+            };
+            siteDAO.InsertOneSite(tmp);
+            Assert.AreEqual(1, siteDAO.DeleteOneSite(tmp.Id));//删除成功返回1
+            Assert.AreEqual(null, siteDAO.GetSiteById(tmp.Id),"删除成功");//检测数据库里是否还有该数据
         }
 
         /// <summary>
         /// 没有对应id的site
         /// </summary>
         [TestMethod]
-        public void TestSiteDAO_DeleteOneSite_Not_Find_Site()
+        public void TestSiteDAO_DeleteOneSite_Failed_By_Not_Find_Site()
         {
             Assert.AreEqual(0, siteDAO.DeleteOneSite(-1), "未找到对应site");
         }
@@ -246,14 +259,27 @@ namespace TestServerMonitor.TestDAO
         [TestMethod]
         public void TestSiteDAO_UpdateSite_Success()
         {
-            List<SiteModel> models = siteDAO.GetAllSite();
-            if(models.Count!=0){
-                Assert.AreEqual(1, siteDAO.UpdateSite(models[0]));
-            }
-            else
+            SiteModel tmp = new SiteModel()
             {
-                //如果测试数据还未插入或者已经删除将返回0
-            }
+                Site_name = "BaiDu",
+                Site_address = "https://www.google.com",
+                Is_server = false,
+                Protocol_type = "HTTP",
+                Server_port = 1,
+                Monitor_interval = 5,
+                Is_Monitor = false,
+                Status_code = "200",
+                Request_interval = 25383,
+                Create_time = DateTime.Now,
+                Update_time = DateTime.Now,
+                Is_pre_check = false,
+                Request_succeed_code = "200",
+                Last_request_result = 0
+            };
+            siteDAO.InsertOneSite(tmp);
+            tmp.Is_Monitor = true;
+            siteDAO.UpdateSite(tmp);
+            Assert.IsTrue(tmp.Is_Monitor,"更新成功");
         }
         /// <summary>
         /// 更新将Site_name设置为空
@@ -315,7 +341,45 @@ namespace TestServerMonitor.TestDAO
         [TestMethod]
         public void TestSiteDAO_UpdateListSite_Success()
         {
-                Assert.AreEqual(siteDAO.GetAllSite().Count, siteDAO.UpdateListSite(siteDAO.GetAllSite()), "更新成功");
+            List<SiteModel> tmp_sites = new List<SiteModel>();
+            tmp_sites.Add(new SiteModel()
+            {
+                Site_name = "Google",
+                Site_address = "https://www.google.com",
+                Is_server = false,
+                Protocol_type = "HTTP",
+                Server_port = 1,
+                Monitor_interval = 5,
+                Is_Monitor = false,
+                Status_code = "200",
+                Request_interval = 25383,
+                Create_time = DateTime.Now,
+                Update_time = DateTime.Now,
+                Is_pre_check = false,
+                Request_succeed_code = "200",
+                Last_request_result = 0
+            });
+            tmp_sites.Add(new SiteModel()
+            {
+                Site_name = "BaiDu",
+                Site_address = "https://www.baidu.com",
+                Is_server = false,
+                Protocol_type = "HTTP",
+                Server_port = 1,
+                Monitor_interval = 5,
+                Is_Monitor = false,
+                Status_code = "200",
+                Request_interval = 25383,
+                Create_time = DateTime.Now,
+                Update_time = DateTime.Now,
+                Is_pre_check = false,
+                Request_succeed_code = "200",
+                Last_request_result = 0
+            });
+            siteDAO.InsertListSite(tmp_sites);
+            tmp_sites[0].Site_name = "new";
+            Assert.AreEqual(tmp_sites.Count, siteDAO.UpdateListSite(tmp_sites));//方法返回值正确
+            Assert.AreEqual(tmp_sites[0].Site_name, siteDAO.GetSiteById(tmp_sites[0].Id).Site_name);//确认修改成功
         }
         /// <summary>
         /// 更新site列表，其中有site的Site_address为空
