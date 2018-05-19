@@ -131,10 +131,10 @@ namespace TestServerMonitor.TestDAO
         /// 没有SiteName字段
         /// </summary>
         [TestMethod]
-        public void TestSiteDAOImpl_InsertOneSite_Failed_By_WithOut_Site_name()
+        public void TestSiteDAOImpl_InsertOneSite_Failed_By_Not_Set_Site_name()
         {
             site.Site_name = null;
-            Assert.AreEqual(-1, siteDAO.InsertOneSite(site), "未设置SiteName");
+            Assert.AreEqual(-1, siteDAO.InsertOneSite(site), "insert failed by not set Site_name");
         }
         /// <summary>
         /// 没有Site_address字段
@@ -143,7 +143,7 @@ namespace TestServerMonitor.TestDAO
         public void TestSiteDAO_InsertOneSite_Failed_By_Not_Set_Site_address()
         {
             site.Site_address = null;
-            Assert.AreEqual(-1, siteDAO.InsertOneSite(site), "未设置SiteAddress");//如果结果为1，插入成功
+            Assert.AreEqual(-1, siteDAO.InsertOneSite(site), "insert failed by not set Site_address");//如果结果为1，插入成功
         }
         /// <summary>
         /// 没有Protocol_type字段
@@ -152,7 +152,7 @@ namespace TestServerMonitor.TestDAO
         public void TestSiteDAO_InsertOneSite_Failed_By_Not_Set_Protocol_type()
         {
             site.Protocol_type = null;
-            Assert.AreEqual(-1, siteDAO.InsertOneSite(site), "未设置");//如果结果为1，插入成功
+            Assert.AreEqual(-1, siteDAO.InsertOneSite(site), "insert failed by not set Protocol_type");//如果结果为1，插入成功
         }
         /// <summary>
         /// 插入site列表成功
@@ -160,9 +160,9 @@ namespace TestServerMonitor.TestDAO
         [TestMethod]
         public void TestSiteDAO_InsertListSite_Success()
         {
-            Assert.AreEqual(siteModels.Count, siteDAO.InsertListSite(siteModels), "插入数据成功");
+            Assert.AreEqual(siteModels.Count, siteDAO.InsertListSite(siteModels), "insert success");
             foreach(SiteModel tmp in siteModels){
-                Assert.AreNotEqual(null, siteDAO.GetSiteById(tmp.Id));//确认site列表插入成功
+                Assert.AreNotEqual(null, siteDAO.GetSiteById(tmp.Id),"check success");//确认site列表插入成功
             }
         }
         /// <summary>
@@ -172,7 +172,7 @@ namespace TestServerMonitor.TestDAO
         public void TestSiteDAO_InsertListSite_Failed_By_Item_Not_Set_Site_name()
         {
             siteModels[0].Site_name = null;
-            Assert.AreNotEqual(siteModels.Count, siteDAO.InsertListSite(siteModels), "插入错误");
+            Assert.AreNotEqual(siteModels.Count, siteDAO.InsertListSite(siteModels), "insert failed by item not set Site_name");
         }
         /// <summary>
         /// site列表中的site存在Protocol_type为空
@@ -181,7 +181,7 @@ namespace TestServerMonitor.TestDAO
         public void TestSiteDAO_InsertListSite_Failed_By_Item_Not_Set_Protocol_type()
         {
             siteModels[0].Protocol_type = null;
-            Assert.AreNotEqual(siteModels.Count, siteDAO.InsertListSite(siteModels), "插入错误");
+            Assert.AreNotEqual(siteModels.Count, siteDAO.InsertListSite(siteModels), "insert failed by item not set Protocol_type");
         }
         /// <summary>
         /// site列表中的site存在Site_address为空
@@ -190,7 +190,7 @@ namespace TestServerMonitor.TestDAO
         public void TestSiteDAO_InsertListSite_Failed_By_Item_Not_Set_Site_address()
         {
             siteModels[0].Site_address = null;
-            Assert.AreNotEqual(siteModels.Count, siteDAO.InsertListSite(siteModels), "插入错误");
+            Assert.AreNotEqual(siteModels.Count, siteDAO.InsertListSite(siteModels), "insert failed by item not set Site_address");
         }
         /// <summary>
         /// 获取Site列表成功
@@ -198,15 +198,15 @@ namespace TestServerMonitor.TestDAO
         [TestMethod]
         public void TestSiteDAO_GetAllSite_Success()
         {
-            Assert.AreNotEqual(null, siteDAO.GetAllSite(), "获取成功");
+            Assert.AreNotEqual(null, siteDAO.GetAllSite(), "get sites success");
         }
         /// <summary>
         /// 成功获取到Site
         /// </summary>
         [TestMethod]
         public void TestSiteDAO_GetSiteById_Success() {
-            if(siteDAO.GetAllSite().Count!=0)
-            Assert.AreNotEqual(null, siteDAO.GetSiteById(siteDAO.GetAllSite()[0].Id));//数据库初始会插入两条数据，第一条将被删除
+            siteDAO.InsertOneSite(site);
+            Assert.AreNotEqual(null, siteDAO.GetSiteById(site.Id), "get site success");
         }
 
         /// <summary>
@@ -215,7 +215,7 @@ namespace TestServerMonitor.TestDAO
         [TestMethod]
         public void TestSiteDAO_GetSiteById_Failed_By_Id_Not_Find()
         {
-            Assert.AreEqual(null, siteDAO.GetSiteById(-1), "未找到该id对应的site");
+            Assert.AreEqual(null, siteDAO.GetSiteById(-1), "not find site by this id");
         }
         /// <summary>
         /// 成功删除
@@ -242,7 +242,7 @@ namespace TestServerMonitor.TestDAO
             };
             siteDAO.InsertOneSite(tmp);
             Assert.AreEqual(1, siteDAO.DeleteOneSite(tmp.Id));//删除成功返回1
-            Assert.AreEqual(null, siteDAO.GetSiteById(tmp.Id),"删除成功");//检测数据库里是否还有该数据
+            Assert.AreEqual(null, siteDAO.GetSiteById(tmp.Id),"delete success");//检测数据库里是否还有该数据
         }
 
         /// <summary>
@@ -251,7 +251,7 @@ namespace TestServerMonitor.TestDAO
         [TestMethod]
         public void TestSiteDAO_DeleteOneSite_Failed_By_Not_Find_Site()
         {
-            Assert.AreEqual(0, siteDAO.DeleteOneSite(-1), "未找到对应site");
+            Assert.AreEqual(0, siteDAO.DeleteOneSite(-1), "not find site");
         }
         /// <summary>
         /// 更新site成功
@@ -292,7 +292,7 @@ namespace TestServerMonitor.TestDAO
             if (list.Count!=0)
             {
                 list[0].Site_name = null;
-                Assert.AreEqual(-1, siteDAO.UpdateSite(list[0]), "将Site_name设置为null");
+                Assert.AreEqual(-1, siteDAO.UpdateSite(list[0]), "Site_name is be set null");
             }
             else
             {
@@ -310,7 +310,7 @@ namespace TestServerMonitor.TestDAO
             if (list.Count != 0)
             {
                 list[0].Site_address = null;
-                Assert.AreEqual(-1, siteDAO.UpdateSite(list[0]), "将Site_address设置为null");
+                Assert.AreEqual(-1, siteDAO.UpdateSite(list[0]), "Site_address is be set null");
             }
             else
             {
@@ -328,7 +328,7 @@ namespace TestServerMonitor.TestDAO
             if (list.Count != 0)
             {
                 list[0].Protocol_type = null;
-                Assert.AreEqual(-1, siteDAO.UpdateSite(list[0]), "将Protocol_type设置为null");
+                Assert.AreEqual(-1, siteDAO.UpdateSite(list[0]), "Protocol_type is be set null");
             }
             else
             {
