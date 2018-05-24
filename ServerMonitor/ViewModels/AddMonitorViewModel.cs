@@ -133,7 +133,7 @@ namespace ServerMonitor.ViewModels
 
     public class MonitorItem : ObservableObject
     {
-        //xndfewsf testv 
+        //xndfewsf aswasdsfsdgvdf wafdesdger btv 
         int id;
         string image;
         string site_name;
