@@ -135,7 +135,7 @@ namespace ServerMonitor.ViewModels
     {
         //xndfewsf aswasdsfsdgvdf wafdesdger btv 
         int id;
-        string image;
+        string ime;
         string site_name;
         string site_address;
         bool is_Monitor;
@@ -151,10 +151,10 @@ namespace ServerMonitor.ViewModels
         }
         public string Image
         {
-            get => image;
+            get => ime;
             set
             {
-                image = value;
+                ime = value;
                 RaisePropertyChanged(() => Image);
             }
         }
