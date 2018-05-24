@@ -131,9 +131,10 @@ namespace ServerMonitor.ViewModels
         #endregion 辅助函数
     }
 
+    //xndfewsf aswasdsfsdgvdf wafdesdger btv 
     public class MonitorItem : ObservableObject
     {
-        //xndfewsf aswasdsfsdgvdf wafdesdger btv 
+        
         int id;
         string ime;
         string site_name;
